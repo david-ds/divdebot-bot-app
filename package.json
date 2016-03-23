@@ -1,0 +1,21 @@
+{
+  "name": "divdebot-bot-app",
+  "version": "2.0.0",
+  "description": "Divdebot is an awesome bot for twitter",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.15.0",
+    "express": "^4.13.4",
+    "mongoose": "^4.4.9",
+    "request": "^2.69.0"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-nodemon": "^0.4.1"
+  }
+}
