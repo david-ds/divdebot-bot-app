@@ -1,5 +1,7 @@
 var mongoose = require('mongoose');
 
+var findOneOrCreate = require('mongoose-find-one-or-create');
+
 
 function databaseConnection() {
 	var options = {
@@ -23,18 +25,19 @@ function databaseConnection() {
 }
 
 
-module.exports = function() {
+
 	
-	databaseConnection();
+databaseConnection();
 
-	var highlightSchema = mongoose.Schema({
-		name: String,
-		telegramId: Number,
-		chans: [Number],
-		muted: [Number], /* muted users */
-		noisy: {type: Boolean, default: false}, /* if not noisy, send a discrete notification */
-		primary: {type: Boolean, default: false}
-	});
+var highlightSchema = mongoose.Schema({
+	name: String,
+	userId: Number,
+	chats: [Number],
+	muted: [Number], /* muted users */
+	silent: {type: Boolean, default: false}, /* if not noisy, send a discrete notification */
+	primary: {type: Boolean, default: false}
+});
 
-	return mongoose.model('Highlight', highlightSchema);
-}
+highlightSchema.plugin(findOneOrCreate);
+
+module.exports = mongoose.model('Highlight', highlightSchema);

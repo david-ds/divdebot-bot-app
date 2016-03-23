@@ -9,9 +9,11 @@ var bodyParser = require('body-parser');
 var request = require('express');
 
 /** model */
-var Highlight = require('./database')();
-
+var Highlight = require('./database');
+/** config */
 var config = require('./config');
+
+var usersRepository = require('./users/index');
 
 
 var divDeBot = function() {
@@ -27,9 +29,57 @@ var divDeBot = function() {
 
 	app.use(bodyParser.json());
 
-	/* main endpoint */
-	app.get('/messages', function(req, res) {
+	/**
+	 * A new message from Telegram has comming
+	 */
+	app.post('/messages', function(req, res) {
 
+		if(!req.body.message) {
+			return res.status(200).json({message: 'no message provided. Ignoring request'});
+		}
+
+		var incommingMessage = req.body.message;
+
+		/* this message has a text */
+		if(incommingMessage.text && incommingMessage.text !== '') {
+			var text = incommingMessage.text.toLowerCase();
+
+			var senderId = incommingMessage.from.id;
+			var chat = incommingMessage.chat;
+
+
+			/* register sender if he is not in the database */
+			usersRepository.findOrCreatePrimaryHighlight(incommingMessage.from, function() {
+				/* add the user to the current chat if not */
+				usersRepository.addUserToChat(incommingMessage.from, chat, function() {});
+			});
+
+
+			/* show highlights */
+			if(text === "/highlights") {
+				Highlight.find({userId: senderId}, function(err, highlights) {
+					if(err) { throw err;}
+
+					return res.json(highlights);
+				});
+			}
+
+			else if(text.indexOf("/add") === 0) {
+				var highlightName = text.substring(5);
+
+				var highlight = new Highlight({
+					name: highlightName,
+					userId: senderId,
+				});
+			}
+
+			else {
+				//processing..
+
+				return res.json({message: 'text has been processed'});
+			}
+
+		}
 
 
 	});
