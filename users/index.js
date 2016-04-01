@@ -41,9 +41,21 @@ var registerUserAndChannel = function(privateMessage, sender, chat, callback) {
 	});
 };
 
+var addHighlight = function(highlight, persistedSender, silent, res) {
+	var highlight = new Highlight({
+		name: highlight,
+		userId: persistedSender.userId,
+		chats: persistedSender.chats,
+		muted: persistedSender.muted,
+		silent: silent
+	});
 
-
+	highlight.save(function() {
+		return res.json({message: 'your highlight has been added'});
+	});
+}
 
 module.exports.findOrCreatePrimaryHighlight = findOrCreatePrimaryHighlight;
 module.exports.addUserToChat = addUserToChat;
 module.exports.registerUserAndChannel = registerUserAndChannel;
+module.exports.addHighlight = addHighlight;

@@ -52,6 +52,7 @@ var divDeBot = function() {
 			var privateMessage = typeof incommingMessage.chat.username != "undefined";
 
 			usersRepository.registerUserAndChannel(privateMessage, incommingMessage.from, chat, function(persistedSender) {
+				
 				/* show highlights */
 				if(privateMessage && text === "/highlights") {
 					Highlight.find({userId: senderId}, function(err, highlights) {
@@ -61,22 +62,40 @@ var divDeBot = function() {
 					});
 				}
 
+				else if(text.indexOf("/add --slient") === 0) {
+					var highlightName = text.substring(14);
+
+					return usersRepository.addHighlight(highlightName, persistedSender, true, res);
+				}
+
 				else if(text.indexOf("/add") === 0) {
 					var highlightName = text.substring(5);
 
-					var highlight = new Highlight({
-						name: highlightName,
-						userId: senderId,
-						chats: persistedSender.chats
-					});
-					highlight.save(function() {
-						return res.json({message: 'your highlight has been added'});
-					});
+					return usersRepository.addHighlight(highlightName, persistedSender, false, res);
 				}
 
-				else {
-					//processing..
+				else if(text.indexOf("/mute") === 0) {
+					var username = text.substring(6);
 
+					if (username.indexOf("@") === 0)
+					{
+						username = username.substring(1);
+					}
+
+					Highlight.update({userId: senderId}, { $addToSet: {muted: username}}, function() {
+						return res.json({message: '@' + username + ' has been muted'});
+					});
+				}
+				else if(text.indexOf("/unmute") === 0) {
+					var username = text.substring(8);
+
+					Highlight.update({userId: senderId}, {$pull: {muted: username}}, function() {
+						return res.json({message: '@' + username + ' has been unmuted'});
+					})
+				}
+
+
+				else {
 					return res.json({message: 'text has been processed'});
 				}
 			});

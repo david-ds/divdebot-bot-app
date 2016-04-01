@@ -34,7 +34,7 @@ var highlightSchema = mongoose.Schema({
 	name: String,
 	userId: Number,
 	chats: [Number],
-	muted: [Number], /* muted users */
+	muted: [String], /* muted users */
 	silent: {type: Boolean, default: false}, /* if not noisy, send a discrete notification */
 	primary: {type: Boolean, default: false}
 });

@@ -129,5 +129,31 @@ describe("Recieve message from telegram", function() {
 			});
 		});
 	});
+
+
+	describe("Mute someone", function() {
+		it("should recieve message", function(done) {
+			var registeredMessage = createMessage('/mute @cococo');
+			agent.post('/messages').send(registeredMessage).expect(200).end(function(err, res) {
+				assert.equal(res.body.message, '@cococo has been muted', 'user not muted');
+				done();
+			});
+		})
+		it("coco should be muted", function(done) {
+			highlight.findOne({primary: true}, function(err, hl) {
+				assert.deepEqual(hl.muted, ['cococo'], 'coco is not muted : ' + hl.muted);
+				done();
+			});
+		});
+		it("should mute someone else", function(done) {
+			var registeredMessage = createMessage('/mute @lizzaroc');
+			agent.post('/messages').send(registeredMessage).expect(200).end(function(err, res) {
+				highlight.findOne({primary: true}, function(err, hl) {
+					assert.deepEqual(hl.muted, ['cococo', 'lizzaroc'], 'coco or lizzaroc are not muted');
+					done();
+				})
+			});
+		});
+	});
 });
 
