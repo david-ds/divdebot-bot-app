@@ -62,19 +62,19 @@ var divDeBot = function() {
 					});
 				}
 
-				else if(text.indexOf("/add --slient") === 0) {
+				else if(privateMessage && text.indexOf("/add --slient") === 0) {
 					var highlightName = text.substring(14);
 
 					return usersRepository.addHighlight(highlightName, persistedSender, true, res);
 				}
 
-				else if(text.indexOf("/add") === 0) {
+				else if(privateMessage && text.indexOf("/add") === 0) {
 					var highlightName = text.substring(5);
 
 					return usersRepository.addHighlight(highlightName, persistedSender, false, res);
 				}
 
-				else if(text.indexOf("/mute") === 0) {
+				else if(privateMessage && text.indexOf("/mute") === 0) {
 					var username = text.substring(6);
 
 					if (username.indexOf("@") === 0)
@@ -82,26 +82,54 @@ var divDeBot = function() {
 						username = username.substring(1);
 					}
 
-					Highlight.update({userId: senderId}, { $addToSet: {muted: username}}, function() {
+					Highlight.update({userId: senderId}, { $addToSet: {muted: username}}, {multi: true}, function() {
 						return res.json({message: '@' + username + ' has been muted'});
 					});
 				}
-				else if(text.indexOf("/unmute") === 0) {
+				else if(privateMessage && text.indexOf("/unmute") === 0) {
 					var username = text.substring(8);
 
-					Highlight.update({userId: senderId}, {$pull: {muted: username}}, function() {
+					if (username.indexOf("@") === 0)
+					{
+						username = username.substring(1);
+					}
+
+					Highlight.update({userId: senderId}, {$pull: {muted: username}}, {multi: true}, function() {
 						return res.json({message: '@' + username + ' has been unmuted'});
 					})
 				}
 
+				else if(!privateMessage) {
+					//text processing..
 
+					var words = text.match(/\b([\w\déèêaàâïîôöùûü_\-\']+)\b/g);
+                	var words_at = text.match(/\@([\w\déèêaàâïîôöùûü_\-\']+)\b/g); //words with @blabla
+
+                	if(!words) {
+                		return res.json({message: 'empty text'});
+                	}
+
+                	Highlight.find({
+                		highlight: {$in: words},
+                		userId: {$ne: senderId},
+                		chats: chat.id,
+                		muted: {$ne: persistedSender.username}
+                	}, function(err, hls) {
+                		if(err) { throw err;}
+                		if(!hls) {
+                			return res.json({message: 'no highlight found'});
+                		}
+                		return res.json({message: 'highlights found : ' + hls.length});
+                		
+                	});		 
+                		
+                		
+				}
 				else {
-					return res.json({message: 'text has been processed'});
+					return res.json({message: 'incorrect command'});
 				}
 			});
 		}
-
-
 	});
 
 	self.run = function(callback) {

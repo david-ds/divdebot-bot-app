@@ -49,7 +49,7 @@ describe("Recieve message from telegram", function() {
 		app.run(done);
 	});
 
-	describe("Send messages to a channel", function() {
+	describe("Registration", function() {
 		it("should recieve the first message", function(done) {
 			var registeredMessage = createMessage('coucou', 9876);
 
@@ -94,7 +94,9 @@ describe("Recieve message from telegram", function() {
 			});
 		});
 	});
+});
 
+describe("Send a command", function() {
 	describe("Register an normal highlight", function() {
 		it("should recieve message", function(done) {
 			var registerMessage = createMessage('/add divounet');
@@ -152,6 +154,33 @@ describe("Recieve message from telegram", function() {
 					assert.deepEqual(hl.muted, ['cococo', 'lizzaroc'], 'coco or lizzaroc are not muted');
 					done();
 				})
+			});
+		});
+	});
+
+
+	describe("Unmute someone", function() {
+		it("should unmute cococo", function(done) {
+			var registeredMessage = createMessage('/unmute @cococo');
+			agent.post('/messages').send(registeredMessage).expect(200).end(function(err, res) {
+				assert.equal(res.body.message, '@cococo has been unmuted');
+				done();
+			});
+		});
+		it("Only lizzaroc should be muted", function(done) {
+			highlight.findOne({primary: true}, function(err, hl) {
+				assert.deepEqual(hl.muted, ['lizzaroc'], 'muted users');
+				done();
+			});
+		});
+	});
+
+	describe("send incorrect command", function() {
+		it("should say incorrect command", function(done) {
+			var registeredMessage = createMessage('incorrect command');
+			agent.post('/messages').send(registeredMessage).expect(200).end(function(err, res) {
+				assert.equal(res.body.message, 'incorrect command');
+				done();
 			});
 		});
 	});
