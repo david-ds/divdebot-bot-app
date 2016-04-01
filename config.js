@@ -1,12 +1,9 @@
 var request = require('request');
 
 module.exports.getTelegramEndpoint = function () {
-	if(!process.env.TELEGRAM_TOKEN) {
-		throw ("No telegram token found");
-	}
-	if(!process.env.TELEGRAM_URL) {
-		throw ("No telegram api endpoint found");
-	}
+
+	var telegramToken = process.env.TELEGRAM_TOKEN || "telegram_token";
+	var telegramUrl = process.env.TELEGRAM_URL || "telegram_url";
 
 	return process.env.TELEGRAM_URL + "/bot" + process.env.TELEGRAM_TOKEN;
 };

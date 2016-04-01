@@ -85,16 +85,21 @@ var divDeBot = function() {
 
 	});
 
-	self.run = function() {
+	self.run = function(callback) {
 		var port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 		app.listen(port, function() {
-			console.log("Application listening on port %d", port)
+			console.log("Application listening on port %d", port);
+			callback();
 		});
 	}
 }
 
-var divDeBotApp = new divDeBot();
-divDeBotApp.run();
+if(require.main === module) {
+	var divDeBotApp = new divDeBot();
+	divDeBotApp.run(function() {});
+}
+
+module.exports = divDeBot;
 
 
 

@@ -5,11 +5,20 @@ var agent = supertest.agent('http://localhost:8080');
 
 var highlight = require('./../database');
 
+var server = require('./../index.js');
+
 
 describe("Recieve message from telegram", function() {
 
 	before(function(done) {
+
+
 		highlight.remove({}, done);
+	});
+
+	before(function(done) {
+		var app = new server();
+		app.run(done);
 	});
 
 	describe("Send messages to a channel", function() {
