@@ -49,36 +49,36 @@ var divDeBot = function() {
 			var senderId = incommingMessage.from.id;
 			var chat = incommingMessage.chat;
 
+			var privateMessage = typeof incommingMessage.chat.username != "undefined";
 
-			/* register sender if he is not in the database */
-			usersRepository.findOrCreatePrimaryHighlight(incommingMessage.from, function() {
-				/* add the user to the current chat if not */
-				usersRepository.addUserToChat(incommingMessage.from, chat, function() {
+			usersRepository.registerUserAndChannel(privateMessage, incommingMessage.from, chat, function(persistedSender) {
+				/* show highlights */
+				if(privateMessage && text === "/highlights") {
+					Highlight.find({userId: senderId}, function(err, highlights) {
+						if(err) { throw err;}
 
-					/* show highlights */
-					if(text === "/highlights") {
-						Highlight.find({userId: senderId}, function(err, highlights) {
-							if(err) { throw err;}
+						return res.json(highlights);
+					});
+				}
 
-							return res.json(highlights);
-						});
-					}
+				else if(text.indexOf("/add") === 0) {
+					var highlightName = text.substring(5);
 
-					else if(text.indexOf("/add") === 0) {
-						var highlightName = text.substring(5);
+					var highlight = new Highlight({
+						name: highlightName,
+						userId: senderId,
+						chats: persistedSender.chats
+					});
+					highlight.save(function() {
+						return res.json({message: 'your highlight has been added'});
+					});
+				}
 
-						var highlight = new Highlight({
-							name: highlightName,
-							userId: senderId,
-						});
-					}
+				else {
+					//processing..
 
-					else {
-						//processing..
-
-						return res.json({message: 'text has been processed'});
-					}
-				});
+					return res.json({message: 'text has been processed'});
+				}
 			});
 		}
 
