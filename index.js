@@ -34,6 +34,8 @@ var divDeBot = function() {
 	 */
 	app.post('/messages', function(req, res) {
 
+		var messageResponse = {};
+
 		if(!req.body.message) {
 			return res.status(200).json({message: 'no message provided. Ignoring request'});
 		}
@@ -51,34 +53,33 @@ var divDeBot = function() {
 			/* register sender if he is not in the database */
 			usersRepository.findOrCreatePrimaryHighlight(incommingMessage.from, function() {
 				/* add the user to the current chat if not */
-				usersRepository.addUserToChat(incommingMessage.from, chat, function() {});
+				usersRepository.addUserToChat(incommingMessage.from, chat, function() {
+
+					/* show highlights */
+					if(text === "/highlights") {
+						Highlight.find({userId: senderId}, function(err, highlights) {
+							if(err) { throw err;}
+
+							return res.json(highlights);
+						});
+					}
+
+					else if(text.indexOf("/add") === 0) {
+						var highlightName = text.substring(5);
+
+						var highlight = new Highlight({
+							name: highlightName,
+							userId: senderId,
+						});
+					}
+
+					else {
+						//processing..
+
+						return res.json({message: 'text has been processed'});
+					}
+				});
 			});
-
-
-			/* show highlights */
-			if(text === "/highlights") {
-				Highlight.find({userId: senderId}, function(err, highlights) {
-					if(err) { throw err;}
-
-					return res.json(highlights);
-				});
-			}
-
-			else if(text.indexOf("/add") === 0) {
-				var highlightName = text.substring(5);
-
-				var highlight = new Highlight({
-					name: highlightName,
-					userId: senderId,
-				});
-			}
-
-			else {
-				//processing..
-
-				return res.json({message: 'text has been processed'});
-			}
-
 		}
 
 

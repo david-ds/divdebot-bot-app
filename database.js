@@ -5,12 +5,13 @@ var findOneOrCreate = require('mongoose-find-one-or-create');
 
 function databaseConnection() {
 	var options = {
-		host : process.env.OPENSHIFT_MONGODB_DB_HOST || "localhost",
+		host : process.env.OPENSHIFT_MONGODB_DB_HOST || process.env.MONGODB_DB_HOST || "localhost",
 		port : process.env.OPENSHIFT_MONGODB_DB_PORT || 27017,
 		username : process.env.OPENSHIFT_MONGODB_DB_USERNAME,
 		password : process.env.OPENSHIFT_MONGODB_DB_PASSWORD,
 		db: process.env.OPENSHIFT_APP_NAME || "div"
 	};
+
 
 	var connection_url = options.host + ":" + options.port + "/" + options.db;
 

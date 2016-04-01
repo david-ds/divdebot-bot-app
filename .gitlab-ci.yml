@@ -1,0 +1,12 @@
+image: node:latest
+services:
+  - mongo
+
+variables:
+  MONGODB_HOST: mongo
+
+npm_run:
+  script:
+    - npm install
+    - node index.js
+    - npm test
