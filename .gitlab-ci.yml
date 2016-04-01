@@ -10,5 +10,4 @@ variables:
 npm_run:
   script:
     - npm install -s
-    - node index.js
     - npm test
