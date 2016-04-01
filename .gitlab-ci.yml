@@ -4,6 +4,8 @@ services:
 
 variables:
   MONGODB_HOST: mongo
+  TELEGRAM_TOKEN: test
+  TELEGRAM_URL: lol
 
 npm_run:
   script:
