@@ -1,6 +1,6 @@
 image: node:latest
 services:
-  - mongo
+  - mongo:latest
 
 variables:
   MONGODB_HOST: mongo
