@@ -3,12 +3,12 @@ services:
   - mongo:latest
 
 variables:
-  MONGODB_HOST: mongo
+  MONGODB_HOST: mongodb
   TELEGRAM_TOKEN: test
   TELEGRAM_URL: lol
 
 npm_run:
   script:
-    - npm install
+    - npm install -s
     - node index.js
     - npm test
