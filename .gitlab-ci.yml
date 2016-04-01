@@ -3,7 +3,7 @@ services:
   - mongo:latest
 
 variables:
-  MONGODB_DB_HOST: mongodb
+  MONGODB_DB_HOST: mongo
   TELEGRAM_TOKEN: test
   TELEGRAM_URL: lol
 
