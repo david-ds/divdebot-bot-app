@@ -37,11 +37,11 @@ var registerUserAndChannel = function(privateMessage, sender, chat, callback) {
 		else {
 			callback(persistedSender);
 		}
-		
+
 	});
 };
 
-var addHighlight = function(highlight, persistedSender, silent, res) {
+var addHighlight = function(highlight, persistedSender, silent, callback) {
 	var highlight = new Highlight({
 		name: highlight,
 		userId: persistedSender.userId,
@@ -50,12 +50,15 @@ var addHighlight = function(highlight, persistedSender, silent, res) {
 		silent: silent
 	});
 
-	highlight.save(function() {
-		return res.json({message: 'your highlight has been added'});
-	});
+	highlight.save(callback);
+}
+
+var removeHighlight = function(highlight, persistedSender, callback) {
+	Highlight.remove({userId: persistedSender.userId, name: highlight}, callback);
 }
 
 module.exports.findOrCreatePrimaryHighlight = findOrCreatePrimaryHighlight;
 module.exports.addUserToChat = addUserToChat;
 module.exports.registerUserAndChannel = registerUserAndChannel;
 module.exports.addHighlight = addHighlight;
+module.exports.removeHighlight = removeHighlight;

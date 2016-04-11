@@ -64,21 +64,42 @@ var divDeBot = function() {
 				if(privateMessage && text === "/highlights") {
 					Highlight.find({userId: senderId}, function(err, highlights) {
 						if(err) { throw err;}
-
-						return res.json(highlights);
+							telegram.sendHighlights(highlights, sender, function() {
+								return res.json(highlights);
+							});
 					});
 				}
 
-				else if(privateMessage && text.indexOf("/add --slient") === 0) {
-					var highlightName = text.substring(14);
+				else if(privateMessage && text.indexOf("/add -silent") === 0) {
+					var highlightName = text.substring(13);
 
-					return usersRepository.addHighlight(highlightName, persistedSender, true, res);
+					usersRepository.addHighlight(highlightName, persistedSender, true, function() {
+						telegram.sendNewHighlight(sender, highlightName, function() {
+							return res.json({message: 'your highlight has been added'});
+						});
+
+					});
 				}
 
 				else if(privateMessage && text.indexOf("/add") === 0) {
 					var highlightName = text.substring(5);
 
-					return usersRepository.addHighlight(highlightName, persistedSender, false, res);
+					usersRepository.addHighlight(highlightName, persistedSender, false, function() {
+						telegram.sendNewHighlight(sender, highlightName
+							, function() {
+							return res.json({message: 'your highlight has been added'});
+						});
+					});
+				}
+
+				else if(privateMessage && text.indexOf("/remove") === 0) {
+					var highlightName = text.substring(8);
+
+					usersRepository.removeHighlight(highlightName, persistedSender, function() {
+						telegram.sendRemovedHighlight(sender, highlightName, function() {
+							return res.json({message: 'Your highlight has been removed'});
+						})
+					});
 				}
 
 				else if(privateMessage && text.indexOf("/mute") === 0) {
