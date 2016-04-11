@@ -69,8 +69,7 @@ var divDeBot = function() {
 							});
 					});
 				}
-
-				else if(privateMessage && text.indexOf("/add -silent") === 0) {
+				else if(privateMessage && text.indexOf("/add -silent ") === 0) {
 					var highlightName = text.substring(13);
 
 					usersRepository.addHighlight(highlightName, persistedSender, true, function() {
@@ -81,7 +80,7 @@ var divDeBot = function() {
 					});
 				}
 
-				else if(privateMessage && text.indexOf("/add") === 0) {
+				else if(privateMessage && text.indexOf("/add ") === 0) {
 					var highlightName = text.substring(5);
 
 					usersRepository.addHighlight(highlightName, persistedSender, false, function() {
@@ -91,8 +90,28 @@ var divDeBot = function() {
 						});
 					});
 				}
+				else if(privateMessage && text === "/remove")	{
+					Highlight.find({userId: senderId}, function(err, highlights) {
+						if(err) { throw err;}
+						var keyboard = [];
+						highlights.forEach(function(hl) {
+							keyboard.push(["/remove " + hl.name]);
+						});
 
-				else if(privateMessage && text.indexOf("/remove") === 0) {
+						telegram.sendMessage({
+							to: senderId,
+							text: 'Supprimez un des highlights suivants :'
+						}, {
+							keyboard: keyboard,
+							one_time_keyboard: true
+						}, function() {
+							return res.json({message: 'keyboard shown'});
+						});
+
+					});
+
+				}
+				else if(privateMessage && text.indexOf("/remove ") === 0) {
 					var highlightName = text.substring(8);
 
 					usersRepository.removeHighlight(highlightName, persistedSender, function() {
@@ -102,7 +121,7 @@ var divDeBot = function() {
 					});
 				}
 
-				else if(privateMessage && text.indexOf("/mute") === 0) {
+				else if(privateMessage && text.indexOf("/mute ") === 0) {
 					var username = text.substring(6);
 
 					if (username.indexOf("@") === 0)
@@ -114,7 +133,7 @@ var divDeBot = function() {
 						return res.json({message: '@' + username + ' has been muted'});
 					});
 				}
-				else if(privateMessage && text.indexOf("/unmute") === 0) {
+				else if(privateMessage && text.indexOf("/unmute ") === 0) {
 					var username = text.substring(8);
 
 					if (username.indexOf("@") === 0)
