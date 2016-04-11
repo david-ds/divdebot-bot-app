@@ -15,6 +15,7 @@
     "grunt-mocha-cli": "^2.0.0",
     "mongoose": "^4.4.9",
     "mongoose-find-one-or-create": "^0.2.0",
+    "redis": "^2.6.0-1",
     "request": "^2.69.0",
     "uniqid": "^1.0.0"
   },
