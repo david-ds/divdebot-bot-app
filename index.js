@@ -27,7 +27,7 @@ var divDeBot = function() {
 
 
 	/** register to telegram as webhook */
-	if(process.env.NODE_ENV != test) {
+	if(process.env.NODE_ENV != "test") {
 		config.registerToTelegram(self.TELEGRAM_ENDPOINT);
 	}
 
