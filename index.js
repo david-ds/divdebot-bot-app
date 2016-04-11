@@ -169,14 +169,15 @@ var divDeBot = function() {
 													to: chat.id,
 													text: "#" + hashtag
 												}, {}, function() {
+
+													telegram.sendIsTyping(chat);
+
 													return res.json({message: 'highlights found : ' + hls.length, highlights: notifications, sendHashtag: sendHashtag});
 												})
 											} else {
 												return res.json({message: 'highlights found : ' + hls.length, highlights: notifications, sendHashtag: sendHashtag});
 											}
                 		});
-
-
                 	});
 
 

@@ -23,9 +23,6 @@ var sendMessage = function(notification, keyboard, callback) {
 			callback(options, body);
 		});
 	}
-	else {
-		callback(options, {});
-	}
 };
 
 module.exports.sendMessage = sendMessage;
@@ -53,3 +50,16 @@ module.exports.sendNewHighlight = function(sender, highlightName, callback) {
 module.exports.sendRemovedHighlight = function(sender, highlightName, callback) {
 	sendMessage({to: sender.id, text: highlightName + " a été supprimé de la liste de tes /highlights"}, {}, callback);
 }
+
+module.exports.sendIsTyping = function(chat) {
+	request.post(telegramEndpoint + "/sendChatAction",
+	{
+		form: {
+			chat_id: chat.id,
+			action: "typing"
+		},
+		json: true,
+	}, function(err, res, body) {
+		if(err) { throw err;}
+	});
+};
