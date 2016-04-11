@@ -5,7 +5,7 @@ services:
 
 variables:
   MONGODB_DB_HOST: mongo
-  REDIS_HOST: redis
+  REDIS_DB_HOST: redis
   TELEGRAM_TOKEN: test
   TELEGRAM_URL: lol
   NODE_ENV: test

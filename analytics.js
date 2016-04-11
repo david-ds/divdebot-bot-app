@@ -1,12 +1,12 @@
 var redis = require('redis');
 
 var url = "redis://";
-url += process.env.REDIS_USER || "";
-if(process.env.REDIS_PASSWORD) {
-  url += ":" + process.env.REDIS_PASSWORD + "@";
+url += process.env.REDIS_DB_USER || "";
+if(process.env.REDIS_DB_PASSWORD) {
+  url += ":" + process.env.REDIS_DB_PASSWORD + "@";
 }
-url += process.env.REDIS_HOST || "127.0.0.1";
-url += ":" + (process.env.REDIS_PORT || "6379");
+url += process.env.REDIS_DB_HOST || "127.0.0.1";
+url += ":" + (process.env.REDIS_DB_PORT || "6379");
 
 var client = redis.createClient({url: url});
 
