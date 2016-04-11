@@ -36,6 +36,24 @@ var createMessage = function(text, chat) {
 	return message;
 }
 
+var createExternalMessage = function(text, fromUsername, chat) {
+	return {
+		message: {
+			from: {
+				id: 123,
+				username: fromUsername,
+				first_name: 'Corentin',
+				last_name: 'Dancette'
+			},
+			text: text,
+			chat: {
+				id: chat,
+				title: 'Chan trop bien'
+			}
+		}
+	};
+};
+
 describe("Recieve message from telegram", function() {
 
 	before(function(done) {
@@ -185,4 +203,32 @@ describe("Send a command", function() {
 		});
 	});
 });
+
+describe("Recieve message with highlight", function() {
+	it("should be highlighted", function(done) {
+		var message = createExternalMessage('coucou div', 'cococo', 9876);
+
+		agent.post('/messages').send(message).expect(200).end(function(err, res) {
+			assert.equal(res.body.highlights.length, 1, 'no highlight');
+			done();
+		});
+	});
+	it("should highlight whatever the case", function(done) {
+		var message = createExternalMessage('coucou DIv.', 'cococo', 9876);
+
+		agent.post('/messages').send(message).expect(200).end(function(err, res) {
+			assert.equal(res.body.highlights.length, 1, 'no highlight');
+			done();
+		});
+	});
+
+	it("should highlight only one time", function(done) {
+		var message = createExternalMessage('coucou div divounet', 'cococo', 9876);
+
+		agent.post('/messages').send(message).expect(200).end(function(err, res) {
+			assert.equal(res.body.highlights.length, 1, 'multiple highlights');
+			done();
+		});
+	})
+})
 

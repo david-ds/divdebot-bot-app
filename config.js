@@ -3,9 +3,9 @@ var request = require('request');
 module.exports.getTelegramEndpoint = function () {
 
 	var telegramToken = process.env.TELEGRAM_TOKEN || "telegram_token";
-	var telegramUrl = process.env.TELEGRAM_URL || "telegram_url";
+	var telegramUrl = process.env.TELEGRAM_URL || "https://api.telegram.org";
 
-	return process.env.TELEGRAM_URL + "/bot" + process.env.TELEGRAM_TOKEN;
+	return telegramUrl + "/bot" + telegramToken;
 };
 
 
@@ -18,8 +18,8 @@ module.exports.registerToTelegram = function (TELEGRAM_ENDPOINT) {
 
 	var form = {url: "https://" + myEndpoint + "/messages"};
 
-	request.post(TELEGRAM_ENDPOINT, form, function(error, response, body) {
+	request.post(TELEGRAM_ENDPOINT + '/setWebhook', {form: form}, function(error, response, body) {
         if(error) { throw console.error(error);}
-        console.log('successfully connected to telegram');
+
     });
 }

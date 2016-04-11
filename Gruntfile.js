@@ -7,7 +7,6 @@ module.exports = function(grunt) {
 			},
 			options: {
 				env: {
-					TELEGRAM_TOKEN: 'test',
 					TELEGRAM_URL: 'https://api.telegram.org'
 				}
 			}
