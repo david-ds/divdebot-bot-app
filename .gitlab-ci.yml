@@ -6,6 +6,7 @@ variables:
   MONGODB_DB_HOST: mongo
   TELEGRAM_TOKEN: test
   TELEGRAM_URL: lol
+  NODE_ENV: test
 
 npm_run:
   script:
