@@ -9,7 +9,7 @@ module.exports.sendMessage = function(notification, keyboard, callback) {
 	var form = {
 		chat_id: notification.to,
 		text: notification.text,
-		disable_notification: notification.silent
+		disable_notification: notification.silent || false
 	};
 
 	var options = {

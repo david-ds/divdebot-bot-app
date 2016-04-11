@@ -5,6 +5,8 @@ var app = express();
 
 var bodyParser = require('body-parser');
 
+var uniqid = require('uniqid');
+
 /* request */
 var request = require('express');
 var async = require('async');
@@ -134,14 +136,23 @@ var divDeBot = function() {
 
                 		var notifications = telegramResponse.notifications;
                 		var sendHashtag = telegramResponse.sendHashtag;
+										var hashtag = telegramResponse.hashtag;
 
                 		async.each(notifications, function(notification, callback) {
                 			telegram.sendMessage(notification, {}, function(options, body) {
                 				callback();
                 			});
                 		}, function() {
-               				return res.json({message: 'highlights found : ' + hls.length, highlights: notifications, sendHashtag: sendHashtag});
-
+											if(sendHashtag) {
+												telegram.sendMessage({
+													to: chat.id,
+													text: "#" + hashtag
+												}, {}, function() {
+													return res.json({message: 'highlights found : ' + hls.length, highlights: notifications, sendHashtag: sendHashtag});
+												})
+											} else {
+												return res.json({message: 'highlights found : ' + hls.length, highlights: notifications, sendHashtag: sendHashtag});
+											}
                 		});
 
 
@@ -160,6 +171,7 @@ var divDeBot = function() {
 		var notifications = [];
 		var targetsId = [];
 		var sendHashtag = false;
+		var hashtag = uniqid();
 
 		hls.forEach(function(hl) {
 			if(targetsId.indexOf(hl.userId) === -1)
@@ -171,7 +183,7 @@ var divDeBot = function() {
 				var showTrace = ((words_at.indexOf("@" + hl.name) > -1) || hl.primary) && !hl.silent;
 				if(showTrace) {
 					text += '\n';
-					text += "#blabla";
+					text += "#" + hashtag;
 				}
 
 				notifications.push({
@@ -187,7 +199,7 @@ var divDeBot = function() {
 			}
 		});
 
-		return {notifications: notifications, sendHashtag: sendHashtag};
+		return {notifications: notifications, sendHashtag: sendHashtag, hashtag: hashtag};
 	}
 
 	self.run = function(callback) {
