@@ -6,6 +6,7 @@ var app = express();
 var bodyParser = require('body-parser');
 
 var uniqid = require('uniqid');
+var analytics = require('./analytics');
 
 /* request */
 var request = require('express');
@@ -148,6 +149,9 @@ var divDeBot = function() {
 
 				else if(!privateMessage) {
 					//text processing..
+
+					//registering it..
+					analytics.incrementChat(chat);
 
 					var words = text.match(/\b([\w\déèêaàâïîôöùûü_\-\']+)\b/g);
                 	var words_at = text.match(/\@([\w\déèêaàâïîôöùûü_\-\']+)\b/g) || []; //words with @blabla
