@@ -17,9 +17,15 @@ module.exports.sendMessage = function(notification, keyboard, callback) {
 		url: telegramEndpoint + '/sendMessage',
 		form: form
 	};
+	if(process.env.NODE_ENV != "test"){
+		request.post(telegramEndpoint + '/sendMessage', {form: form, json: true}, function(err, res, body) {
+			if(err) { throw err;};
+			callback(options, body);
+		});
+	}
+	else {
+		callback(options, {});
+	}
 
-	request.post(telegramEndpoint + '/sendMessage', {form: form, json: true}, function(err, res, body) {
-		if(err) { throw err;};
-		callback(options, body);
-	});
+
 };
