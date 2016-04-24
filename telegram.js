@@ -17,12 +17,14 @@ var sendMessage = function(notification, keyboard, callback) {
 	var form = {
 		chat_id: notification.to,
 		text: notification.text,
-		disable_notification: notification.silent || false
+		disable_notification: notification.silent || false,
+		parse_mode: notification.parse_mode
 	};
 
 	if(keyboard) {
 		form.reply_markup = JSON.stringify(keyboard);
 	}
+
 
 	var options = {
 		method: 'post',

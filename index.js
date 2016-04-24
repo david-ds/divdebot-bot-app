@@ -20,6 +20,8 @@ var config = require('./config');
 var usersRepository = require('./users/index');
 var telegram = require('./telegram');
 
+var markdownEscape = require('markdown-escape');
+
 
 var divDeBot = function() {
 
@@ -221,9 +223,9 @@ var divDeBot = function() {
 		hls.forEach(function(hl) {
 			if(targetsId.indexOf(hl.userId) === -1)
 			{
-				var text = sender.first_name + ' ' + sender.last_name.substr(0,1) + ' a parlé de ' + hl.name + ' dans ' + chat.title + '\n';
+				var text = '*' + markdownEscape(sender.first_name + ' ' + sender.last_name.substr(0,1)) + '*' + markdownEscape(' a parlé de ' + hl.name + ' dans ' + chat.title) + '\n';
 				text += '\n';
-				text += originalText;
+				text += markdownEscape(originalText);
 
 				var showTrace = ((words_at.indexOf("@" + hl.name) > -1) || hl.primary) && !hl.silent;
 				if(showTrace) {
@@ -235,7 +237,8 @@ var divDeBot = function() {
 					to: hl.userId,
 					silent: hl.silent,
 					showTrace: showTrace,
-					text: text
+					text: text,
+					parse_mode: 'Markdown'
 				});
 
 				sendHashtag = sendHashtag || showTrace;
