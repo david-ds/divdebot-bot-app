@@ -13,7 +13,7 @@ var client = redis.createClient({url: url});
 
 module.exports = {
   incrementChat: function(chat) {
-    client.sadd("chans", chat.id);
-    client.incr("chat_" + chat.id);
+    client.sadd("chats", chat.id+":"+chat.title);
+    client.incr("chat:" + chat.id);
   }
 };

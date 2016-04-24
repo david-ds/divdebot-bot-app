@@ -12,7 +12,6 @@ function databaseConnection() {
 		db: process.env.OPENSHIFT_APP_NAME || "div"
 	};
 
-
 	var connection_url = options.host + ":" + options.port + "/" + options.db;
 
 	if(options.username)
@@ -27,7 +26,7 @@ function databaseConnection() {
 
 
 
-	
+
 databaseConnection();
 
 var highlightSchema = mongoose.Schema({
