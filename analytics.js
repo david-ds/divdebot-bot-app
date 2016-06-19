@@ -14,6 +14,12 @@ var client = redis.createClient({url: url});
 module.exports = {
   incrementChat: function(chat) {
     client.sadd("chats", chat.id+":"+chat.title);
-    client.incr("chat:" + chat.id);
+    client.rpush("chat:" + chat.id, Date.now());
   }
 };
+
+
+/**
+
+
+*/

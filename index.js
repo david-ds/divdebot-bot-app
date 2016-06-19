@@ -6,7 +6,7 @@ var app = express();
 var bodyParser = require('body-parser');
 
 var uniqid = require('uniqid');
-var analytics = require('./analytics');
+//var analytics = require('./analytics');
 
 /* request */
 var request = require('express');
