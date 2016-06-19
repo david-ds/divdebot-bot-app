@@ -4,7 +4,8 @@
   "description": "Divdebot is an awesome bot for twitter",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "start": "node index.js"
   },
   "author": "",
   "license": "ISC",

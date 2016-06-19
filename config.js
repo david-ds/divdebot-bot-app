@@ -20,6 +20,7 @@ module.exports.registerToTelegram = function (TELEGRAM_ENDPOINT) {
 
 	request.post(TELEGRAM_ENDPOINT + '/setWebhook', {form: form}, function(error, response, body) {
         if(error) { throw console.error(error);}
+				console.log('registered to telegram');
 
     });
 }
