@@ -1,0 +1,15 @@
+version: '2'
+services:
+  bot_app:
+    image: node:5
+    command: npm start
+    working_dir: /usr/src/app
+    volumes:
+      - ./:/usr/src/app
+    env_file: .env
+    ports:
+      - "8080:8080"
+  mongo:
+    image: mongo:3.2
+    volumes:
+      - /data/db
