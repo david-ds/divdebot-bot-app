@@ -153,63 +153,80 @@ var divDeBot = function() {
 					//text processing..
 
 					//registering it..
-					analytics.incrementChat(chat);
+					//analytics.incrementChat(chat);
 
-					var words = text.match(/\b([\w\déèêaàâïîôöùûü_\-\']+)\b/g);
-                	var words_at = text.match(/\@([\w\déèêaàâïîôöùûü_\-\']+)\b/g) || []; //words with @blabla
+					if(text.indexOf("@channel") >= 0) {
+						//send a message to everyone in the channel
+						Highlight.distinct('userId', {chats: chat.id}, function(err, userIds) {
+							async.forEach(userIds, function(userId, callback) {
+								var notification = {
+									to: userId,
+									silent: false,
+									showTrace: true,
+									text: self.getTextNotification(sender, '@channel', chat, incommingMessage.text),
+									parse_mode: 'Markdown'
+								};
+								console.log(notification);
+								telegram.sendMessage(notification, {}, function(option, body) {
+									callback();
+								})
+							}, function() {
+								return res.send({message: '@channel highlight'});
+							});
+						});
+					}
+					else
+					{
+						var words = text.match(/\b([\w\déèêaàâïîôöùûü_\-\']+)\b/g);
+	        	var words_at = text.match(/\@([\w\déèêaàâïîôöùûü_\-\']+)\b/g) || []; //words with @blabla
 
-                	if(!words) {
-                		return res.json({message: 'empty text'});
-                	}
-
-
-                	console.log('parsing message ' + text);
-
-
-                	Highlight.find({
-                		name: {$in: words},
-                		//userId: {$ne: senderId},
-                		chats: chat.id,
-                		muted: {$ne: sender.username}
-                	}, function(err, hls) {
-                		if(err) { throw err;}
-                		if(!hls) {
-                			return res.json({message: 'no highlight found'});
-                		}
-
-
-                		var telegramResponse = self.highlightsAnalysis(hls, sender, chat, incommingMessage.text, words_at);
-
-                		var notifications = telegramResponse.notifications;
-                		var sendHashtag = telegramResponse.sendHashtag;
-										var hashtag = telegramResponse.hashtag;
-
-                		async.each(notifications, function(notification, callback) {
-                			telegram.sendMessage(notification, {}, function(options, body) {
-                				callback();
-                			});
-                		}, function() {
-											if(sendHashtag) {
-												telegram.sendMessage({
-													to: chat.id,
-													text: "#" + hashtag
-												}, {}, function() {
-
-													telegram.sendIsTyping(chat);
-
-													return res.json({message: 'highlights found : ' + hls.length, highlights: notifications, sendHashtag: sendHashtag});
-												})
-											} else {
-												return res.json({message: 'highlights found : ' + hls.length, highlights: notifications, sendHashtag: sendHashtag});
-											}
-                		});
-                	});
+	        	if(!words) {
+	        		return res.json({message: 'empty text'});
+	        	}
 
 
+	        	console.log('parsing message ' + text);
+
+
+	        	Highlight.find({
+	        		name: {$in: words},
+	        		//userId: {$ne: senderId},
+	        		chats: chat.id,
+	        		muted: {$ne: sender.username}
+	        	}, function(err, hls) {
+	        		if(err) { throw err;}
+	        		if(!hls) {
+	        			return res.json({message: 'no highlight found'});
+	        		}
+
+
+	        		var telegramResponse = self.highlightsAnalysis(hls, sender, chat, incommingMessage.text, words_at);
+
+	        		var notifications = telegramResponse.notifications;
+	        		var sendHashtag = telegramResponse.sendHashtag;
+							var hashtag = telegramResponse.hashtag;
+
+	        		async.each(notifications, function(notification, callback) {
+	        			telegram.sendMessage(notification, {}, function(options, body) {
+	        				callback();
+	        			});
+	        		}, function() {
+								if(sendHashtag) {
+										self.sendHashtag(chat, hashtag, function() {
+											return res.json({message: 'highlights found : ' + hls.length, highlights: notifications, sendHashtag: sendHashtag});
+										});
+								} else {
+									return res.json({message: 'highlights found : ' + hls.length, highlights: notifications, sendHashtag: sendHashtag});
+								}
+	        		});
+	        	});
+					}
 				}
 				else {
 					return res.json({message: 'incorrect command'});
 				}
+
+
 			});
 		}
 	});
@@ -223,9 +240,7 @@ var divDeBot = function() {
 		hls.forEach(function(hl) {
 			if(targetsId.indexOf(hl.userId) === -1)
 			{
-				var text = '*' + markdownEscape(sender.first_name + ' ' + sender.last_name.substr(0,1)) + '*' + markdownEscape(' a parlé de ' + hl.name + ' dans ' + chat.title) + '\n';
-				text += '\n';
-				text += markdownEscape(originalText);
+				var text = self.getTextNotification(sender, hl.name, chat, originalText);
 
 				var showTrace = ((words_at.indexOf("@" + hl.name) > -1) || hl.primary) && !hl.silent;
 				if(showTrace) {
@@ -248,6 +263,24 @@ var divDeBot = function() {
 		});
 
 		return {notifications: notifications, sendHashtag: sendHashtag, hashtag: hashtag};
+	}
+
+	self.getTextNotification = function(sender, highlightName, chat, originalText) {
+		var text = '*' + markdownEscape(sender.first_name + ' ' + sender.last_name.substr(0,1)) + '*' + markdownEscape(' a parlé de ' + highlightName + ' dans ' + chat.title) + '\n';
+		text += '\n';
+		text += markdownEscape(originalText);
+
+		return text;
+	}
+
+	self.sendHashtag = function(chat, hashtag, callback) {
+		telegram.sendMessage({
+			to: chat.id,
+			text: "#" + hashtag
+		}, {}, function() {
+			telegram.sendIsTyping(chat);
+			callback();
+		});
 	}
 
 	self.run = function(callback) {
